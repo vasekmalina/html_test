@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moje Mini DB</title>
+    <!-- Knihovna Dexie pro snadnou práci s DB -->
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
+        .del-btn { background: #dc3545; padding: 5px 10px; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Moje Tabulka</h2>
+    <input type="text" id="nazev" placeholder="Název položky...">
+    <input type="number" id="hodnota" placeholder="Hodnota...">
+    <button onclick="pridat()">Přidat do DB</button>
+
+    <table id="tabulka">
+        <thead>
+            <tr><th>Název</th><th>Hodnota</th><th></th></tr>
+        </thead>
+        <tbody id="vypis"></tbody>
+    </table>
+</div>
+
+<script>
+    // 1. Inicializace databáze
+    const db = new Dexie("MojeAplikaceDB");
+    db.version(1).stores({
+        polozky: "++id, nazev, hodnota"
+    });
+
+    // 2. Funkce pro zobrazení dat
+    async function obnovitTabulku() {
+        const vsechnyPolozky = await db.polozky.toArray();
+        const vypis = document.getElementById("vypis");
+        vypis.innerHTML = "";
+        
+        vsechnyPolozky.forEach(p => {
+            vypis.innerHTML += `
+                <tr>
+                    <td>${p.nazev}</td>
+                    <td>${p.hodnota}</td>
+                    <td><button class="del-btn" onclick="smazat(${p.id})">Smazat</button></td>
+                </tr>`;
+        });
+    }
+
+    // 3. Funkce pro přidání dat
+    async function pridat() {
+        const n = document.getElementById("nazev").value;
+        const h = document.getElementById("hodnota").value;
+        if(n && h) {
+            await db.polozky.add({ nazev: n, hodnota: h });
+            document.getElementById("nazev").value = "";
+            document.getElementById("hodnota").value = "";
+            obnovitTabulku();
+        }
+    }
+
+    // 4. Funkce pro smazání
+    async function smazat(id) {
+        await db.polozky.delete(id);
+        obnovitTabulku();
+    }
+
+    // Načíst data při startu
+    obnovitTabulku();
+</script>
+
+</body>
+</html>
