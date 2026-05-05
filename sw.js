@@ -4,10 +4,10 @@ const CACHE = 'slovicka-v1';
 
 // Soubory, které chceme cachovat ihned po instalaci
 const PRECACHE = [
-  '/',
-  '/index.html',
-  'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap',
-  'https://unpkg.com/dexie@3.2.4/dist/dexie.js'
+  './',
+  './index.html',
+  'https://unpkg.com/dexie@3.2.4/dist/dexie.js',
+  'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap'
 ];
 
 // INSTALL: stáhne soubory do cache
